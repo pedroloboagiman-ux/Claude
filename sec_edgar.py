@@ -207,9 +207,11 @@ def fetch_13f_xml(cik_padded: str, accession_number: str) -> str:
     xml_url = None
     for doc in docs:
         doc_type = doc.get("type", "").upper()
-        filename = doc.get("filename", "")
-        if "INFORMATION TABLE" in doc_type or filename.lower().endswith(".xml"):
-            if "primary_doc" not in filename.lower():
+        doc_desc = doc.get("description", "").upper()
+        filename = doc.get("document", "")
+        is_info_table = "INFORMATION TABLE" in doc_type or "INFORMATION TABLE" in doc_desc
+        if is_info_table or ("primary_doc" not in filename.lower() and filename.lower().endswith(".xml")):
+            if filename:
                 xml_url = base_url + filename
                 break
 
