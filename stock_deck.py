@@ -71,7 +71,7 @@ st.markdown(
     .stFormSubmitButton button, .stButton button {
         background: transparent !important;
         border: 1px solid #1e1e1e !important;
-        color: #4a4a4a !important;
+        color: #888 !important;
         border-radius: 6px !important;
         font-family: 'Inter', sans-serif !important;
         font-size: 0.85rem !important;
@@ -98,14 +98,14 @@ st.markdown(
     [data-testid="stPopover"] button {
         background: transparent !important;
         border: 1px solid #111 !important;
-        color: #333 !important;
+        color: #666 !important;
         border-radius: 6px !important;
         font-size: 0.9rem !important;
         padding: 0.3rem 0.7rem !important;
     }
     [data-testid="stPopover"] button:hover {
         border-color: #333 !important;
-        color: #555 !important;
+        color: #888 !important;
     }
 
     /* ── Scrollbar ────────────────────────────────────────────────── */
@@ -242,7 +242,7 @@ col_logo, _, col_gear = st.columns([3, 8, 1])
 
 with col_logo:
     st.markdown(
-        '<span style="font-size:0.6rem; letter-spacing:0.35em; color:#252525; '
+        '<span style="font-size:0.6rem; letter-spacing:0.35em; color:#555; '
         'font-weight:600; text-transform:uppercase;">◈ STOCK DECK</span>',
         unsafe_allow_html=True,
     )
@@ -250,7 +250,7 @@ with col_logo:
 with col_gear:
     with st.popover("⚙", use_container_width=False):
         st.markdown(
-            '<p style="font-size:0.65rem; letter-spacing:0.2em; color:#333; '
+            '<p style="font-size:0.65rem; letter-spacing:0.2em; color:#666; '
             'text-transform:uppercase; margin:0 0 1rem 0;">API SETTINGS</p>',
             unsafe_allow_html=True,
         )
@@ -262,7 +262,7 @@ with col_gear:
             help="Get a free key at financialmodelingprep.com",
         )
         st.markdown(
-            '<p style="font-size:0.65rem; color:#252525; margin-top:0.5rem;">'
+            '<p style="font-size:0.65rem; color:#555; margin-top:0.5rem;">'
             "Without key: ~4 years via Yahoo Finance<br>"
             "With free key: up to 10 years via FMP</p>",
             unsafe_allow_html=True,
@@ -364,7 +364,7 @@ subtitle_parts.append("Revenue")
 st.markdown(
     f'<div style="font-size:3rem; font-weight:900; letter-spacing:-0.04em; '
     f'color:#f5f5f5; line-height:1; margin-bottom:0.4rem;">{company_name}</div>'
-    f'<div style="font-size:0.65rem; color:#252525; letter-spacing:0.25em; '
+    f'<div style="font-size:0.65rem; color:#555; letter-spacing:0.25em; '
     f'text-transform:uppercase; margin-bottom:2.5rem;">'
     f'{"  ·  ".join(subtitle_parts)}</div>',
     unsafe_allow_html=True,
@@ -373,7 +373,7 @@ st.markdown(
 # ─── Year Range Selector ───────────────────────────────────────────────────────
 
 st.markdown(
-    '<div style="font-size:0.6rem; color:#252525; letter-spacing:0.25em; '
+    '<div style="font-size:0.6rem; color:#666; letter-spacing:0.25em; '
     'text-transform:uppercase; margin-bottom:0.4rem;">PERIOD</div>',
     unsafe_allow_html=True,
 )
@@ -381,7 +381,7 @@ st.markdown(
 if len(sorted_years) == 1:
     start_yr = end_yr = sorted_years[0]
     st.markdown(
-        f'<span style="font-size:0.9rem; color:#555;">{start_yr}</span>',
+        f'<span style="font-size:0.9rem; color:#888;">{start_yr}</span>',
         unsafe_allow_html=True,
     )
 else:
@@ -417,7 +417,7 @@ with col_metrics:
         cagr_sign = "+" if cagr_pct >= 0 else ""
         cagr_display = f"{cagr_sign}{cagr_pct:.1f}%"
     else:
-        cagr_color = "#333"
+        cagr_color = "#555"
         cagr_display = "—"
 
     start_rev_str = fmt(sel_revs[0], currency)
@@ -433,14 +433,14 @@ with col_metrics:
             text-align:center;
             margin-bottom:0.75rem;
         ">
-            <div style="font-size:0.6rem; letter-spacing:0.25em; color:#252525;
+            <div style="font-size:0.6rem; letter-spacing:0.25em; color:#777;
                 text-transform:uppercase; margin-bottom:1.2rem;">CAGR</div>
             <div style="font-size:3rem; font-weight:900; color:{cagr_color};
                 line-height:1; letter-spacing:-0.04em;">{cagr_display}</div>
-            <div style="font-size:0.65rem; color:#1e1e1e; margin-top:0.6rem;
+            <div style="font-size:0.65rem; color:#555; margin-top:0.6rem;
                 letter-spacing:0.05em;">{start_yr} – {end_yr}</div>
             <div style="
-                font-size:0.6rem; color:#1a1a1a;
+                font-size:0.6rem; color:#555;
                 margin-top:1.2rem; padding-top:1rem;
                 border-top:1px solid #111;
                 line-height:1.8;
@@ -467,13 +467,13 @@ with col_metrics:
             padding:1.5rem;
             text-align:center;
         ">
-            <div style="font-size:0.6rem; letter-spacing:0.25em; color:#252525;
+            <div style="font-size:0.6rem; letter-spacing:0.25em; color:#777;
                 text-transform:uppercase; margin-bottom:1rem;">LATEST YoY</div>
             <div style="font-size:2.2rem; font-weight:800; color:{yoy_color};
                 line-height:1; letter-spacing:-0.03em;">
                 {yoy_sign}{latest_yoy:.1f}%
             </div>
-            <div style="font-size:0.6rem; color:#1e1e1e; margin-top:0.5rem;">
+            <div style="font-size:0.6rem; color:#555; margin-top:0.5rem;">
                 {sel_years[-2]} → {sel_years[-1]}
             </div>
         </div>
@@ -481,7 +481,7 @@ with col_metrics:
         unsafe_allow_html=True,
     )
 
-# ── Left column: Bar chart ────────────────────────────────────────────────────
+# ── Left column: Bar chart + YoY chips ───────────────────────────────────────
 with col_chart:
     # Bar colors: first bar neutral, rest based on YoY direction
     bar_colors = []
@@ -512,7 +512,7 @@ with col_chart:
             marker=dict(color=bar_colors, line=dict(width=0)),
             text=bar_labels,
             textposition="outside",
-            textfont=dict(size=10, color="#333", family="Inter"),
+            textfont=dict(size=10, color="#aaaaaa", family="Inter"),
             hovertemplate="<b>%{x}</b><br>%{text}<extra></extra>",
             width=0.52,
         )
@@ -521,7 +521,7 @@ with col_chart:
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Inter", color="#444"),
+        font=dict(family="Inter", color="#888"),
         height=380,
         margin=dict(l=0, r=10, t=40, b=10),
         xaxis=dict(
@@ -530,7 +530,7 @@ with col_chart:
             zeroline=False,
             tickvals=sel_years,
             ticktext=[str(y) for y in sel_years],
-            tickfont=dict(size=12, color="#444"),
+            tickfont=dict(size=12, color="#888"),
         ),
         yaxis=dict(
             showgrid=True,
@@ -538,17 +538,17 @@ with col_chart:
             gridwidth=1,
             showline=False,
             zeroline=False,
-            tickfont=dict(size=10, color="#2a2a2a"),
+            tickfont=dict(size=10, color="#666"),
             title=dict(
                 text=unit_label,
-                font=dict(size=9, color="#1e1e1e"),
+                font=dict(size=9, color="#666"),
             ),
         ),
         bargap=0.35,
         showlegend=False,
         title=dict(
             text="ANNUAL REVENUE",
-            font=dict(size=9, color="#1e1e1e", family="Inter"),
+            font=dict(size=9, color="#666", family="Inter"),
             x=0,
             xanchor="left",
             y=0.99,
@@ -558,45 +558,42 @@ with col_chart:
 
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
-# ─── YoY Growth Chips ─────────────────────────────────────────────────────────
-
-st.markdown(
-    '<div style="font-size:0.6rem; color:#1e1e1e; letter-spacing:0.25em; '
-    'text-transform:uppercase; margin:0.25rem 0 1rem 0;">YEAR-OVER-YEAR GROWTH</div>',
-    unsafe_allow_html=True,
-)
-
-chips = []
-for i in range(1, len(sel_years)):
-    pct = (
-        (sel_revs[i] - sel_revs[i - 1]) / sel_revs[i - 1] * 100
-        if sel_revs[i - 1]
-        else 0
-    )
-    is_pos = pct >= 0
-    color = "#4ade80" if is_pos else "#f87171"
-    sign = "+" if is_pos else ""
-    chips.append(
-        f'<div style="background:#0c0c0c; border:1px solid #131313; '
-        f'border-radius:8px; padding:10px 18px; text-align:center; min-width:80px;">'
-        f'<div style="font-size:0.55rem; color:#1e1e1e; letter-spacing:0.15em; '
-        f'text-transform:uppercase; margin-bottom:5px;">{sel_years[i]}</div>'
-        f'<div style="font-size:1rem; font-weight:700; color:{color}; '
-        f'letter-spacing:-0.01em;">{sign}{pct:.1f}%</div>'
-        f"</div>"
+    # ── YoY Growth chips aligned with chart bars ──────────────────────────────
+    st.markdown(
+        '<div style="font-size:0.6rem; color:#666; letter-spacing:0.25em; '
+        'text-transform:uppercase; margin:0.25rem 0 0.75rem 0;">YEAR-OVER-YEAR GROWTH</div>',
+        unsafe_allow_html=True,
     )
 
-st.markdown(
-    f'<div style="display:flex; flex-wrap:wrap; gap:8px;">{"".join(chips)}</div>',
-    unsafe_allow_html=True,
-)
+    # Use equal-width columns matching bar positions (one column per year)
+    yoy_cols = st.columns(len(sel_years))
+    for i in range(1, len(sel_years)):
+        pct = (
+            (sel_revs[i] - sel_revs[i - 1]) / sel_revs[i - 1] * 100
+            if sel_revs[i - 1]
+            else 0
+        )
+        is_pos = pct >= 0
+        color = "#4ade80" if is_pos else "#f87171"
+        sign = "+" if is_pos else ""
+        with yoy_cols[i]:
+            st.markdown(
+                f'<div style="background:#0c0c0c; border:1px solid #131313; '
+                f'border-radius:8px; padding:10px 4px; text-align:center;">'
+                f'<div style="font-size:0.55rem; color:#888; letter-spacing:0.15em; '
+                f'text-transform:uppercase; margin-bottom:5px;">{sel_years[i]}</div>'
+                f'<div style="font-size:0.9rem; font-weight:700; color:{color}; '
+                f'letter-spacing:-0.01em;">{sign}{pct:.1f}%</div>'
+                f"</div>",
+                unsafe_allow_html=True,
+            )
 
 # ─── Footer ───────────────────────────────────────────────────────────────────
 
 st.markdown("<br><br>", unsafe_allow_html=True)
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown(
-    '<div style="font-size:0.55rem; color:#151515; text-align:right; '
+    '<div style="font-size:0.55rem; color:#333; text-align:right; '
     'letter-spacing:0.15em; text-transform:uppercase;">'
     "DATA: YAHOO FINANCE · FINANCIAL MODELING PREP</div>",
     unsafe_allow_html=True,
