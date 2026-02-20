@@ -82,7 +82,7 @@ def _search_efts(query: str) -> list[dict]:
     """Search SEC EFTS full-text search for 13F-HR filers."""
     url = "https://efts.sec.gov/LATEST/search-index"
     params = {
-        "q": f'"{query}"',
+        "q": query,
         "forms": "13F-HR",
         "dateRange": "custom",
         "startdt": "2020-01-01",
@@ -95,13 +95,11 @@ def _search_efts(query: str) -> list[dict]:
         for h in hits:
             src = h.get("_source", {})
             entity = src.get("entity_name", src.get("display_names", [""])[0] if src.get("display_names") else "")
-            cik_raw = src.get("file_num", "") or ""
-            # Try entity_id field
             entity_id = src.get("entity_id", "")
-            if not entity_id:
+            if not entity_id or not entity:
                 continue
             cik_padded = str(entity_id).zfill(10)
-            if cik_padded not in seen and entity:
+            if cik_padded not in seen:
                 seen.add(cik_padded)
                 results.append({"name": entity.upper(), "cik": cik_padded})
         return results
@@ -113,8 +111,8 @@ def search_filers(query: str) -> list[dict]:
     """
     Search for 13F institutional investors by name.
 
-    Stage 1: Filter company_tickers.json (fast, local)
-    Stage 2: EFTS API call if fewer than 3 results
+    Stage 1: Filter company_tickers.json (fast, local, listed companies)
+    Stage 2: EFTS API — always called to capture non-listed fund managers
 
     Returns list of {"name": str, "cik": str (10-digit padded)}
     """
@@ -130,13 +128,12 @@ def search_filers(query: str) -> list[dict]:
     ]
 
     results = stage1
-    if len(results) < 3:
-        stage2 = _search_efts(query)
-        existing_ciks = {r["cik"] for r in results}
-        for r in stage2:
-            if r["cik"] not in existing_ciks:
-                results.append(r)
-                existing_ciks.add(r["cik"])
+    stage2 = _search_efts(query)
+    existing_ciks = {r["cik"] for r in results}
+    for r in stage2:
+        if r["cik"] not in existing_ciks:
+            results.append(r)
+            existing_ciks.add(r["cik"])
 
     return results[:20]
 
@@ -207,9 +204,11 @@ def fetch_13f_xml(cik_padded: str, accession_number: str) -> str:
     xml_url = None
     for doc in docs:
         doc_type = doc.get("type", "").upper()
-        filename = doc.get("filename", "")
-        if "INFORMATION TABLE" in doc_type or filename.lower().endswith(".xml"):
-            if "primary_doc" not in filename.lower():
+        doc_desc = doc.get("description", "").upper()
+        filename = doc.get("document", "")
+        is_info_table = "INFORMATION TABLE" in doc_type or "INFORMATION TABLE" in doc_desc
+        if is_info_table or ("primary_doc" not in filename.lower() and filename.lower().endswith(".xml")):
+            if filename:
                 xml_url = base_url + filename
                 break
 
