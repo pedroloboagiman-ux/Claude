@@ -454,20 +454,21 @@ def _fetch_fmp_transcript(ticker: str, year: int, fmp_key: str) -> str | None:
     return None
 
 
-def _analyze_with_claude(
+def _analyze_with_gemini(
     text: str,
     ticker: str,
     year: int,
     yoy_pct: float,
-    anthropic_key: str,
+    gemini_key: str,
 ) -> list[dict] | None:
     """
-    Call Claude to extract structured revenue drivers from transcript/release.
+    Call Gemini to extract structured revenue drivers from transcript/release.
     Returns a list of dicts: {"label": str, "direction": "positive"|"negative"|"neutral"}.
     """
     try:
-        import anthropic  # type: ignore
-        client = anthropic.Anthropic(api_key=anthropic_key)
+        import google.generativeai as genai  # type: ignore
+        genai.configure(api_key=gemini_key)
+        model = genai.GenerativeModel("gemini-2.0-flash")
 
         direction_word = "growth" if yoy_pct >= 0 else "decline"
         prompt = (
@@ -483,12 +484,8 @@ def _analyze_with_claude(
             f"--- TEXT START ---\n{text[:9000]}\n--- TEXT END ---"
         )
 
-        msg = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=1024,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        raw = msg.content[0].text.strip()
+        response = model.generate_content(prompt)
+        raw = response.text.strip()
         match = re.search(r"\[.*?\]", raw, re.DOTALL)
         if not match:
             return None
@@ -510,7 +507,7 @@ def get_revenue_drivers(
     year: int,
     yoy_pct: float,
     fmp_key: str,
-    anthropic_key: str,
+    gemini_key: str,
 ) -> dict:
     """
     Orchestrate fetching transcript/release and (optionally) AI analysis.
@@ -542,8 +539,8 @@ def get_revenue_drivers(
                 "error": "No transcript or press release found for this year."}
 
     # 3. AI-powered analysis
-    if anthropic_key:
-        factors = _analyze_with_claude(text, ticker, year, yoy_pct, anthropic_key)
+    if gemini_key:
+        factors = _analyze_with_gemini(text, ticker, year, yoy_pct, gemini_key)
         if factors:
             return {"source": source, "factors": factors, "ai_powered": True, "error": None}
 
@@ -564,7 +561,7 @@ for _k, _v in [
     ("current_ticker", "AAPL"),
     ("last_loaded", ""),
     ("fmp_key", ""),
-    ("anthropic_key", ""),
+    ("gemini_key", ""),
     ("load_error", ""),
     ("analysis_year", None),
     ("analysis_result", None),
@@ -613,18 +610,18 @@ with col_gear:
             unsafe_allow_html=True,
         )
 
-        # Anthropic Key
+        # Gemini Key
         st.markdown(
             '<p style="font-size:0.68rem; color:#555; letter-spacing:0.12em; '
-            'text-transform:uppercase; margin:0 0 0.3rem 0;">Anthropic (Claude AI)</p>',
+            'text-transform:uppercase; margin:0 0 0.3rem 0;">Google Gemini (AI)</p>',
             unsafe_allow_html=True,
         )
-        new_anthropic_key = st.text_input(
-            "Anthropic API Key",
-            value=st.session_state["anthropic_key"],
+        new_gemini_key = st.text_input(
+            "Gemini API Key",
+            value=st.session_state["gemini_key"],
             type="password",
             placeholder="Optional — AI analysis of revenue drivers",
-            help="Get a key at console.anthropic.com",
+            help="Get a free key at aistudio.google.com",
             label_visibility="collapsed",
         )
         st.markdown(
@@ -642,8 +639,8 @@ with col_gear:
             _fetch_yf.clear()
             _fetch_fmp.clear()
 
-        if new_anthropic_key != st.session_state["anthropic_key"]:
-            st.session_state["anthropic_key"] = new_anthropic_key
+        if new_gemini_key != st.session_state["gemini_key"]:
+            st.session_state["gemini_key"] = new_gemini_key
             st.session_state["analysis_result"] = None
 
 st.markdown("<hr>", unsafe_allow_html=True)
@@ -1036,7 +1033,7 @@ else:
                 a_year,
                 a_yoy,
                 st.session_state["fmp_key"],
-                st.session_state["anthropic_key"],
+                st.session_state["gemini_key"],
             )
         st.session_state["analysis_result"] = result
 
@@ -1089,10 +1086,10 @@ else:
                     unsafe_allow_html=True,
                 )
 
-            if not result.get("ai_powered") and st.session_state["anthropic_key"] == "":
+            if not result.get("ai_powered") and st.session_state["gemini_key"] == "":
                 st.markdown(
                     '<div style="font-size:0.68rem; color:#3a3a3a; margin-top:0.8rem;">'
-                    'Add an Anthropic key in ⚙ settings for structured AI analysis.</div>',
+                    'Add a Gemini key in ⚙ settings for structured AI analysis.</div>',
                     unsafe_allow_html=True,
                 )
 
